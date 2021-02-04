@@ -1,1 +1,0 @@
-console=tty1 root=PARTUUID=f95b01c9-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait ipv6.disable=1
