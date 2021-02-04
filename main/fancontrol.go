@@ -130,7 +130,7 @@ func fanControl() {
 	myFanControl.PWMDutyCurrent = 0
 
 	delay := time.NewTicker(delaySeconds * time.Second)
-
+/*
 	for {
 		// Make sure we have 10 fanspeed steps, but if it's more than 90% duty cycle, we just increase by one every time
 		pwmDutyStep := (myFanControl.PWMDutyMax - myFanControl.PWMDutyMin) / 10.0
@@ -167,6 +167,17 @@ func fanControl() {
 	// Default to "ON".
 	C.pinMode(cPin, C.OUTPUT)
 	C.digitalWrite(cPin, C.HIGH)
+*/
+	for {
+		if myFanControl.TempCurrent >= 60.0 {
+			C.digitalWrite(cPin, C.HIGH)
+			myFanControl.PWMDutyCurrent = 1 //only to update totalFanOnTime
+		} else if myFanControl.TempCurrent <= 55.0 {
+			C.digitalWrite(cPin, C.LOW)
+			myFanControl.PWMDutyCurrent = 0 //only to update totalFanOnTime
+		}
+		<-delay.C
+	}
 }
 
 // Service has embedded daemon
