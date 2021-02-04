@@ -77,7 +77,6 @@ install: ogn/ddb.json
 	cp -f ogn/ddb.json /etc/
 	cp -f image/rc.local /etc/
 	cp -f image/config.txt /boot/
-	cp -f image/cmdline.txt /boot/
 
 clean:
 	rm -f gen_gdl90 libdump978.so fancontrol ahrs_approx
