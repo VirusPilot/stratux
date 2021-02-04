@@ -29,6 +29,5 @@ fi
 
 (sleep 30; python3 /root/stratux-radar-display/main/radar.py -d Oled_1in5 -c 192.168.10.1) &
 #(sleep 30; python3 /root/stratux-radar-display/main/radar.py -d Epaper_3in7 -c 192.168.10.1) &
-#(sleep 30; python3 u-blox_agps.py -t Ih-4S-P3PEqP_4fPH50m6A -d /dev/ublox9) &
 
 exit 0
