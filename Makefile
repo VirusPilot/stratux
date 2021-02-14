@@ -75,8 +75,6 @@ install: ogn/ddb.json
 	cp -f image/wpa_supplicant.conf.template /etc/wpa_supplicant/
 	cp -f ogn/ogn-rx-eu_arm /usr/bin/ogn-rx-eu
 	cp -f ogn/ddb.json /etc/
-	cp -f image/rc.local /etc/
-	cp -f image/config.txt /boot/
 
 clean:
 	rm -f gen_gdl90 libdump978.so fancontrol ahrs_approx
