@@ -1662,6 +1662,8 @@ func processNMEALine(l string) (sentenceUsed bool) {
 				globalSettings.OGNAcftType = int(acfttype)
 			} else if kv[0] == "Pilot" {
 				globalSettings.OGNPilot = kv[1]
+			} else if kv[0] == "Reg" {
+				globalSettings.OGNReg = kv[1]
 			}
 		}
 	}
@@ -1704,7 +1706,8 @@ func processNMEALine(l string) (sentenceUsed bool) {
 }
 
 func getOgnTrackerConfigString() string {
-	msg := fmt.Sprintf("$POGNS,Address=0x%s,AddrType=%d,AcftType=%d,Pilot=%s", globalSettings.OGNAddr, globalSettings.OGNAddrType, globalSettings.OGNAcftType, globalSettings.OGNPilot)
+	msg := fmt.Sprintf("$POGNS,Address=0x%s,AddrType=%d,AcftType=%d,Pilot=%s,Reg=%s",
+		globalSettings.OGNAddr, globalSettings.OGNAddrType, globalSettings.OGNAcftType, globalSettings.OGNPilot, globalSettings.OGNReg)
 	msg = appendNmeaChecksum(msg)
 	return msg + "\r\n"
 }
