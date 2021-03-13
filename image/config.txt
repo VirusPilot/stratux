@@ -1,22 +1,19 @@
 # RPi /boot/config.txt
 
+# Enable audio (loads snd_bcm2835)
 dtparam=audio=on
-#max_usb_current=1
-dtparam=i2c_arm=on
-#dtparam=i2c1=on
-#dtparam=i2c1_baudrate=400000
-#dtparam=i2c_arm_baudrate=400000
 
-# move RPi3 Bluetooth off of hardware UART to free up connection for GPS
-#dtoverlay=pi3-miniuart-bt
+# Uncomment some or all of these to enable the optional hardware interfaces
+dtparam=i2c_arm=on
+#dtparam=i2s=on
+dtparam=spi=on
 
 # disable default (mmc0) behavior on the ACT LED.
 dtparam=act_led_trigger=none
 dtparam=act_led_activelow=off
 
-# The below has been added as a proposed EMI reduction measure. Issue #573.
-#sdram_freq=450
-#core_freq=450
-#arm_freq=900
-[all]
-dtparam=spi=on
+# Enable DRM VC4 V3D driver on top of the dispmanx display stack
+dtoverlay=vc4-fkms-v3d
+max_framebuffers=2
+
+# From here on some settings will be added during Stratux setup
