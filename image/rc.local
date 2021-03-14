@@ -17,14 +17,11 @@ if [ "$_IP" ]; then
   printf "My IP address is %s\n" "$_IP"
 fi
 
-
-#
 # Rotate logs on boot.
-#
 /usr/sbin/logrotate /etc/logrotate.conf
 
-
-# Disabled for now as it is unamintained and doesn't run correctly with python2 deprecation
-# /usr/bin/stratux-screen.py start
+# Provide startup script for Tom Bric's radar display, default=disabled
+#(sleep 30; python3 /root/stratux-radar-display/main/radar.py -d Oled_1in5 -c $_IP) &
+#(sleep 60; python3 /root/stratux-radar-display/main/radar.py -d Epaper_3in7 -c $_IP) &
 
 exit 0
