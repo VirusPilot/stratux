@@ -167,18 +167,6 @@ func fanControl() {
 	// Default to "ON".
 	C.pinMode(cPin, C.OUTPUT)
 	C.digitalWrite(cPin, C.HIGH)
-/*
-	for {
-		if myFanControl.TempCurrent >= 60.0 {
-			C.digitalWrite(cPin, C.HIGH)
-			myFanControl.PWMDutyCurrent = 1 //only to update totalFanOnTime
-		} else if myFanControl.TempCurrent <= 55.0 {
-			C.digitalWrite(cPin, C.LOW)
-			myFanControl.PWMDutyCurrent = 0 //only to update totalFanOnTime
-		}
-		<-delay.C
-	}
-*/
 }
 
 // Service has embedded daemon
