@@ -1666,6 +1666,9 @@ func processNMEALine(l string) (sentenceUsed bool) {
 				globalSettings.OGNPilot = kv[1]
 			} else if kv[0] == "Reg" {
 				globalSettings.OGNReg = kv[1]
+			} else if kv[0] == "TxPower" {
+				pwr, _ := strconv.ParseInt(kv[1], 10, 16)
+				globalSettings.OGNTxPower = int(pwr)
 			}
 		}
 	}
@@ -1708,8 +1711,8 @@ func processNMEALine(l string) (sentenceUsed bool) {
 }
 
 func getOgnTrackerConfigString() string {
-	msg := fmt.Sprintf("$POGNS,Address=0x%s,AddrType=%d,AcftType=%d,Pilot=%s,Reg=%s",
-		globalSettings.OGNAddr, globalSettings.OGNAddrType, globalSettings.OGNAcftType, globalSettings.OGNPilot, globalSettings.OGNReg)
+	msg := fmt.Sprintf("$POGNS,Address=0x%s,AddrType=%d,AcftType=%d,Pilot=%s,Reg=%s,TxPower=%d",
+		globalSettings.OGNAddr, globalSettings.OGNAddrType, globalSettings.OGNAcftType, globalSettings.OGNPilot, globalSettings.OGNReg, globalSettings.OGNTxPower)
 	msg = appendNmeaChecksum(msg)
 	return msg + "\r\n"
 }
