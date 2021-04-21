@@ -20,6 +20,9 @@ fi
 # Rotate logs on boot.
 /usr/sbin/logrotate /etc/logrotate.conf
 
+# try to fetch latest ogn database
+(sleep 15; wget -O /root/stratux/ogn/ddb.json http://ddb.glidernet.org/download/?j=1) &
+
 # Provide startup script for Tom Bric's radar display, default=disabled
 #(sleep 60; python3 /root/stratux-radar-display/main/radar.py -d Oled_1in5 -c $_IP) &
 #(sleep 60; python3 /root/stratux-radar-display/main/radar.py -r -d Epaper_3in7 -c $_IP) &
