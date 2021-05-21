@@ -1,5 +1,7 @@
 #!/bin/bash
 
+wget -O /root/stratux/ogn/ddb.json http://ddb.glidernet.org/download/?j=1
+
 #apt-get install -y dh-make
 
 stratuxVersion=`git describe --tags --abbrev=0`
@@ -47,12 +49,13 @@ cp ogn/esp32-ogn-tracker-bin-*.zip work/bin/
 cp ogn/install-ogntracker-firmware-pi.sh work/bin
 
 # WiringPi doesn't allow static linking any more, so we deploy the shared library aswell
-cp /usr/lib/libwiringPi.so work/bin/
+# cp /usr/lib/libwiringPi.so work/bin/
 
-cp test-data/ahrs/ahrs_table.log work/bin/
-cp ahrs_approx work/bin/
+# cp test-data/ahrs/ahrs_table.log work/bin/
+# cp ahrs_approx work/bin/
 
 #TODO: librtlsdr.
+
 cd work/
 cat ../selfupdate/update_header.sh >update.sh
 

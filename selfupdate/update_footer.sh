@@ -4,14 +4,14 @@ cp -f libdump978.so /usr/lib/libdump978.so
 chmod 655 /usr/bin/gen_gdl90
 
 # Startup script.
-RASPBIAN_VERSION=`cat /etc/debian_version`
-if test "$RASPBIAN_VERSION" = "8.0" ; then
-	# Install the systemd startup scripts in any case, even if they won't be used. If this is being run, then the old init.d script
-	#  is still intact and we just leave it. If running Wheezy, then remove the old init.d script.
-	rm -f /etc/init.d/stratux
-	rm -f /etc/rc2.d/S01stratux
-	rm -f /etc/rc6.d/K01stratux
-fi
+#RASPBIAN_VERSION=`cat /etc/debian_version`
+#if test "$RASPBIAN_VERSION" = "8.0" ; then
+#	# Install the systemd startup scripts in any case, even if they won't be used. If this is being run, then the old init.d script
+#	#  is still intact and we just leave it. If running Wheezy, then remove the old init.d script.
+#	rm -f /etc/init.d/stratux
+#	rm -f /etc/rc2.d/S01stratux
+#	rm -f /etc/rc6.d/K01stratux
+#fi
 
 cp -f __lib__systemd__system__stratux.service /lib/systemd/system/stratux.service
 cp -f __root__stratux-pre-start.sh /root/stratux-pre-start.sh
@@ -49,7 +49,7 @@ cp -f config.txt /boot/config.txt
 cp -f rc.local /etc/
 
 #disable serial console
-sed -i /boot/cmdline.txt -e "s/console=ttyAMA0,[0-9]\+ //"
+# sed -i /boot/cmdline.txt -e "s/console=ttyAMA0,[0-9]\+ //"
 
 #modprobe.d blacklist
 cp -f rtl-sdr-blacklist.conf /etc/modprobe.d/
@@ -70,7 +70,7 @@ cp -f motd /etc/motd
 
 #fan control utility
 #remove old script
-rm -f /usr/bin/fancontrol.py
+#rm -f /usr/bin/fancontrol.py
 #install new program
 /usr/bin/fancontrol stop
 /usr/bin/fancontrol remove
@@ -82,16 +82,16 @@ cp -f dump1090 /usr/bin/
 chmod 755 /usr/bin/dump1090
 
 # Install libwiringpi
-cp -f libwiringPi.so /usr/lib/
+# cp -f libwiringPi.so /usr/lib/
 
 # OGN stuff
 cp -f ddb.json /etc/
 cp -f ogn-rx-eu /usr/bin/
 
 # AHRS approx data.
-cp -f ahrs_table.log /root/
-cp -f ahrs_approx /usr/bin/
-chmod 755 /usr/bin/ahrs_approx
+# cp -f ahrs_table.log /root/
+# cp -f ahrs_approx /usr/bin/
+# chmod 755 /usr/bin/ahrs_approx
 
 # DHCPD Config.
 cp -f dhcpd.conf.template /etc/dhcp/dhcpd.conf.template
@@ -108,8 +108,8 @@ cp install-ogntracker-firmware-pi.sh /root/stratux/ogn/
 cd web/ && make stratuxBuild=${stratuxBuild}
 
 # Remove old Wi-Fi watcher script.
-rm -f /usr/sbin/wifi_watch.sh
-sed -i "/\bwifi_watch\b/d" /etc/rc.local
+# rm -f /usr/sbin/wifi_watch.sh
+# sed -i "/\bwifi_watch\b/d" /etc/rc.local
 
 cd /
 rm -rf /root/stratux-update
