@@ -1,7 +1,5 @@
 #!/bin/bash
 
-wget -O /root/stratux/ogn/ddb.json http://ddb.glidernet.org/download/?j=1
-
 #apt-get install -y dh-make
 
 stratuxVersion=`git describe --tags --abbrev=0`
@@ -43,12 +41,14 @@ cp image/logrotate_d_stratux work/bin/
 cp image/rsyslog_d_stratux work/bin/
 cp image/dhcpd.conf.template work/bin/
 cp image/interfaces.template work/bin/
+wget -O /root/stratux/ogn/ddb.json http://ddb.glidernet.org/download/?j=1
 cp ogn/ddb.json work/bin
 
 ARCH=$(arch)
 if [ $ARCH == aarch64 ]
     then
 		cp ogn/ogn-rx-eu_aarch64 work/bin/ogn-rx-eu
+		echo -e "\narm_64bit=1" >> work/bin/config.txt
     else # [ $ARCH == armv7l ]
 		cp ogn/ogn-rx-eu_arm work/bin/ogn-rx-eu
 fi
