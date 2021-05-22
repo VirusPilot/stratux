@@ -44,15 +44,7 @@ cp image/rsyslog_d_stratux work/bin/
 cp image/dhcpd.conf.template work/bin/
 cp image/interfaces.template work/bin/
 cp ogn/ddb.json work/bin
-
-ARCH=$(arch)
-if [ $ARCH == aarch64 ]
-    then
-		cp ogn/ogn-rx-eu_aarch64 work/bin/ogn-rx-eu
-    else # [ $ARCH == armv7l ]
-		cp ogn/ogn-rx-eu_arm work/bin/ogn-rx-eu
-fi
-
+cp ogn/ogn-rx-eu_arm work/bin/ogn-rx-eu
 cp ogn/esp32-ogn-tracker-bin-*.zip work/bin/
 cp ogn/install-ogntracker-firmware-pi.sh work/bin
 
