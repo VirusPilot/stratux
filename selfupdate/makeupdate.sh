@@ -1,7 +1,5 @@
 #!/bin/bash
 
-wget -O /root/stratux/ogn/ddb.json http://ddb.glidernet.org/download/?j=1
-
 #apt-get install -y dh-make
 
 stratuxVersion=`git describe --tags --abbrev=0`
@@ -43,6 +41,7 @@ cp image/logrotate_d_stratux work/bin/
 cp image/rsyslog_d_stratux work/bin/
 cp image/dhcpd.conf.template work/bin/
 cp image/interfaces.template work/bin/
+wget -O /root/stratux/ogn/ddb.json http://ddb.glidernet.org/download/?j=1
 cp ogn/ddb.json work/bin
 
 if [ "$(arch)" == "aarch64" ]; then
