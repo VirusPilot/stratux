@@ -12,7 +12,7 @@ echo
 echo
 
 cd ..
-make
+make clean && make
 rm -rf work
 mkdir -p work/bin
 cp gen_gdl90 work/bin/
