@@ -16,4 +16,4 @@ dtparam=act_led_activelow=off
 dtoverlay=vc4-fkms-v3d
 max_framebuffers=2
 
-# From here on some settings will be added during Stratux setup
+arm_64bit=1
