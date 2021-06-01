@@ -23,10 +23,15 @@ import (
 	"os/user"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"syscall"
 	"text/template"
 	"time"
+
+	"database/sql"
+
+	_ "github.com/mattn/go-sqlite3"
 
 	humanize "github.com/dustin/go-humanize"
 	"golang.org/x/net/websocket"
@@ -742,27 +747,41 @@ func handleDownloadDBRequest(w http.ResponseWriter, r *http.Request) {
 func handleUpdatePostRequest(w http.ResponseWriter, r *http.Request) {
 	setNoCache(w)
 	setJSONHeaders(w)
-	r.ParseMultipartForm(1024 * 1024 * 32) // ~32MB update.
-	file, handler, err := r.FormFile("update_file")
+	reader, err := r.MultipartReader()
 	if err != nil {
 		log.Printf("Update failed from %s (%s).\n", r.RemoteAddr, err.Error())
 		return
 	}
-	defer file.Close()
-	// Special hardware builds. Don't allow an update unless the filename contains the hardware build name.
-	if (len(globalStatus.HardwareBuild) > 0) && !strings.Contains(strings.ToLower(handler.Filename), strings.ToLower(globalStatus.HardwareBuild)) {
-		w.WriteHeader(404)
-		return
+	for {
+		part, err := reader.NextPart();
+		if err != nil {
+			log.Printf("Update failed from %s (%s).\n", r.RemoteAddr, err.Error())
+			return
+		}
+		if part == nil {
+			return
+		}
+
+		if part.FormName() != "update_file" {
+			continue
+		}
+
+		fi, err := os.OpenFile("/root/TMP_update-stratux-v.sh", os.O_WRONLY | os.O_CREATE | os.O_TRUNC, 0666)
+		if err != nil {
+			log.Printf("Update failed from %s (%s).\n", r.RemoteAddr, err.Error())
+			return
+		}
+		defer fi.Close()
+		_, err = io.Copy(fi, part)
+		if err != nil {
+			log.Printf("Update failed from %s (%s).\n", r.RemoteAddr, err.Error())
+			return
+		}
+
+		break
 	}
-	updateFile := fmt.Sprintf("/root/update-stratux-v.sh")
-	f, err := os.OpenFile(updateFile, os.O_WRONLY|os.O_CREATE, 0666)
-	if err != nil {
-		log.Printf("Update failed from %s (%s).\n", r.RemoteAddr, err.Error())
-		return
-	}
-	defer f.Close()
-	io.Copy(f, file)
-	log.Printf("%s uploaded %s for update.\n", r.RemoteAddr, updateFile)
+	os.Rename("/root/TMP_update-stratux-v.sh", "/root/update-stratux-v.sh")
+	log.Printf("%s uploaded %s for update.\n", r.RemoteAddr, "/root/update-stratux-v.sh")
 	// Successful update upload. Now reboot.
 	go delayReboot()
 }
@@ -782,7 +801,7 @@ func defaultServer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "max-age=360") // 5 min, so that if user installs update, he will revalidate soon enough
 	//	setNoCache(w)
 
-	http.FileServer(http.Dir("/var/www")).ServeHTTP(w, r)
+	http.FileServer(http.Dir(STRATUX_HOME + "/www")).ServeHTTP(w, r)
 }
 
 func handleroPartitionRebuild(w http.ResponseWriter, r *http.Request) {
@@ -883,6 +902,95 @@ func viewLogs(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// Scans mapdata dir for all .db and .mbtiles files and returns json representation of all metadata values
+func handleTilesets(w http.ResponseWriter, r *http.Request) {
+	files, err := ioutil.ReadDir(STRATUX_HOME + "/mapdata/");
+	if err != nil {
+		log.Printf("handleTilesets() error: %s\n", err.Error())
+		http.Error(w, err.Error(), 500)
+	}
+	result := make(map[string]map[string]string, 0)
+	for _, f := range files {
+		if f.IsDir() {
+			continue
+		}
+		if strings.HasSuffix(f.Name(), ".mbtiles") || strings.HasSuffix(f.Name(), ".db") {
+			db, err := sql.Open("sqlite3", STRATUX_HOME + "/mapdata/" + f.Name())
+			if err != nil {
+				log.Printf("SQLite open " + f.Name() + " failed: %s", err.Error())
+				continue
+			}
+			defer db.Close()
+			rows, err := db.Query(`SELECT name, value FROM metadata 
+				UNION SELECT 'minzoom', min(zoom_level) FROM tiles WHERE NOT EXISTS (SELECT * FROM metadata WHERE name='minzoom')
+				UNION SELECT 'maxzoom', max(zoom_level) FROM tiles WHERE NOT EXISTS (SELECT * FROM metadata WHERE name='maxzoom')`);
+			if err != nil {
+				log.Printf("SQLite read error %s: %s", f.Name(), err.Error())
+				continue
+			}
+			defer rows.Close()
+			meta := make(map[string]string)
+			for rows.Next() {
+				var name, val string
+				rows.Scan(&name, &val)
+				meta[name] = val
+			}
+			result[f.Name()] = meta
+		}
+	}
+	resJson, _ := json.Marshal(result)
+	w.Write(resJson)
+}
+
+func loadTile(fname string, z, x, y int) ([]byte, error) {
+	db, err := sql.Open("sqlite3", STRATUX_HOME + "/mapdata/" + fname)
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+	stmt, _ := db.Prepare("SELECT tile_data FROM tiles WHERE zoom_level=? AND tile_column=? AND tile_row=?")
+	defer stmt.Close()
+	rows, err := stmt.Query(z, x, y)
+	if err != nil {
+		log.Printf("SQLite read error %s: %s", fname, err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var res []byte
+		rows.Scan(&res)
+		return res, nil
+	}
+	return nil, nil
+}
+
+func handleTile(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.RequestURI, "/")
+	if len(parts) < 4 {
+		return
+	}
+	idx := len(parts) - 1
+	y, err := strconv.Atoi(strings.Split(parts[idx], ".")[0])
+	if err != nil {
+		http.Error(w, "Failed to parse y", 500)
+		return
+	}
+	idx--
+	x, _ := strconv.Atoi(parts[idx])
+	idx--
+	z, _ := strconv.Atoi(parts[idx])
+	idx--
+	file :=  parts[idx]
+	tileData, err := loadTile(file, z, x, y)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	} else if tileData == nil {
+		http.Error(w, "Tile not found", 404)
+	} else {
+		w.Write(tileData)
+	}
+}
+
 func managementInterface() {
 	weatherUpdate = NewUIBroadcaster()
 	trafficUpdate = NewUIBroadcaster()
@@ -962,6 +1070,8 @@ func managementInterface() {
 	http.HandleFunc("/deleteahrslogfiles", handleDeleteAHRSLogFiles)
 	http.HandleFunc("/downloadahrslogs", handleDownloadAHRSLogsRequest)
 	http.HandleFunc("/downloaddb", handleDownloadDBRequest)
+	http.HandleFunc("/tiles/tilesets", handleTilesets)
+	http.HandleFunc("/tiles/", handleTile)
 
 	usr, _ := user.Current()
 	addr := managementAddr

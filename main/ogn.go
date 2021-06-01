@@ -203,6 +203,12 @@ func importOgnTrafficMessage(msg OgnMessage, data string) {
 			ti.Tail = msg.Reg
 			traffic[key] = ti
 		}
+		if msg.Time > 0 && !ti.Timestamp.IsZero() {
+ 			msgtime := time.Unix(msg.Time, 0)
+			if ti.Position_valid && ti.Last_source == TRAFFIC_SOURCE_OGN && msgtime.Before(ti.Timestamp) {
+				return // We already have a newer message for this target. This message was probably relayed by another tracker -- skip
+			}
+		}
 
 	}
 
@@ -316,7 +322,7 @@ var ognTailNumberCache = make(map[string]string)
 func lookupOgnTailNumber(ognid string) string {
 	if len(ognTailNumberCache) == 0 {
 		log.Printf("Parsing OGN device db")
-		ddb, err := ioutil.ReadFile("/etc/ddb.json")
+		ddb, err := ioutil.ReadFile(STRATUX_HOME + "/ogn/ddb.json")
 		if err != nil {
 			log.Printf("Failed to read OGN device db")
 			return ognid

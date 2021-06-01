@@ -5,8 +5,8 @@
 # Run this script as root.
 # Run with argument "dev" to not clone the stratux repository from remote, but instead copy this current local checkout onto the image
 set -x
-BASE_IMAGE_URL="https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2021-04-09/2021-03-04-raspios-buster-arm64-lite.zip"
-ZIPNAME="2021-03-04-raspios-buster-arm64-lite.zip"
+BASE_IMAGE_URL="https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2021-05-28/2021-05-07-raspios-buster-arm64-lite.zip"
+ZIPNAME="2021-05-07-raspios-buster-arm64-lite.zip"
 IMGNAME="${ZIPNAME%.*}.img"
 TMPDIR="$HOME/stratux-tmp"
 
@@ -40,7 +40,7 @@ sizelimit=$(( 512*sizelimit ))
 # Original image partition is too small to hold our stuff.. resize it to 2.5gb
 # Append one GB and truncate to size
 #truncate -s 2600M $IMGNAME
-qemu-img resize $IMGNAME 3000M || die "Image resize failed"
+qemu-img resize $IMGNAME 2700M || die "Image resize failed"
 lo=$(losetup -f)
 losetup $lo $IMGNAME
 partprobe $lo
@@ -89,9 +89,8 @@ else
 fi
 mkdir -p out
 
-# Copy the selfupdate file out of there..
-cp mnt/root/stratux/work/*.sh out
-rm -r mnt/root/stratux/work
+# Move the selfupdate file out of there..
+mv mnt/root/update-*.sh out
 
 umount mnt/boot
 umount mnt
