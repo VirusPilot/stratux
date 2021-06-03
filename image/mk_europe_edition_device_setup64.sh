@@ -25,7 +25,7 @@ apt update
 apt clean
 
 PATH=/root/fake:$PATH apt install --yes libjpeg62-turbo-dev libconfig9 rpi-update hostapd isc-dhcp-server tcpdump git cmake \
-    libusb-1.0-0-dev build-essential build-essential autoconf libtool i2c-tools screen libfftw3-dev libncurses-dev python-serial
+    libusb-1.0-0-dev build-essential autoconf libtool i2c-tools libfftw3-dev libncurses-dev python-serial qemu-utils parted zip unzip 
 
 # try to reduce writing to SD card as much as possible, so they don't get bricked when yanking the power cable
 # Disable swap...
@@ -93,9 +93,9 @@ cd /root && rm -rf kalibrate-rtl
 
 # Install golang
 cd /root
-wget https://golang.org/dl/go1.16.1.linux-arm64.tar.gz
-tar xzf go1.16.1.linux-arm64.tar.gz
-rm go1.16.1.linux-arm64.tar.gz
+wget https://golang.org/dl/go1.16.4.linux-arm64.tar.gz
+tar xzf go1.16.4.linux-arm64.tar.gz
+rm go1.16.4.linux-arm64.tar.gz
 
 # Compile stratux
 cd /root/stratux
