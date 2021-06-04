@@ -12,7 +12,7 @@ echo
 echo
 
 cd ..
-make clean && make -j8
+make -j8
 rm -rf work
 mkdir -p work/bin
 make optinstall STRATUX_HOME=$(pwd)/work/bin/stratux
