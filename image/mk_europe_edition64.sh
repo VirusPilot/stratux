@@ -88,6 +88,7 @@ else
     chroot mnt /bin/bash -c /root/stratux/image/mk_europe_edition_device_setup64.sh
 fi
 mkdir -p out
+rm out/*
 
 # Move the selfupdate file out of there..
 mv mnt/root/update-*.sh out
