@@ -111,6 +111,6 @@ echo '{"UAT_Enabled": true,"OGN_Enabled": false,"DeveloperMode": false}' > mnt/e
 umount mnt
 mv $outname $outname_us
 zip out/$outname_us.zip $outname_us
-
+rm $outname_us
 
 echo "Final images has been placed into $TMPDIR/out. Please install and test the image."
