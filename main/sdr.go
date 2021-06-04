@@ -63,6 +63,7 @@ func (e *ES) read() {
 	defer e.wg.Done()
 	log.Println("Entered ES read() ...")
 	cmd := exec.Command(STRATUX_HOME + "/bin/dump1090", "--oversample", "--net-stratux-port", "30006",  "--net", "--device-index", strconv.Itoa(e.indexID), "--ppm", strconv.Itoa(e.ppm))
+//	cmd := exec.Command(STRATUX_HOME + "/bin/dump1090", "--gain", "42.1", "--oversample", "--net-stratux-port", "30006",  "--net", "--device-index", strconv.Itoa(e.indexID), "--ppm", strconv.Itoa(e.ppm)) // reduced gain
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()
 
@@ -197,6 +198,7 @@ func (f *OGN) read() {
 	}
 
 	cmd := exec.Command(STRATUX_HOME + "/bin/ogn-rx-eu", "-d", strconv.Itoa(f.indexID), "-p", strconv.Itoa(f.ppm), "-L/var/log/")
+//	cmd := exec.Command(STRATUX_HOME + "/bin/ogn-rx-eu", "-g 480", "-d", strconv.Itoa(f.indexID), "-p", strconv.Itoa(f.ppm), "-L/var/log/") // fixed gain instead of autogain
 	stdout, _ := cmd.StdoutPipe()
 	stderr, _ := cmd.StderrPipe()
 	autoRestart := true // automatically restart crashing child process
