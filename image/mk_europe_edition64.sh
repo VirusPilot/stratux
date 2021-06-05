@@ -16,7 +16,9 @@ die() {
 }
 
 if [ "$#" -ne 2 ]; then
-    die "Usage: " $0 " dev|prod branch"
+    echo "Usage: " $0 " dev|prod branch [us]"
+    echo "if \"us\" is given, an image with US-like pre-configuration and without developer mode enabled will be created as well"
+    exit 1
 fi
 
 # cd to script directory
@@ -40,7 +42,7 @@ sizelimit=$(( 512*sizelimit ))
 # Original image partition is too small to hold our stuff.. resize it to 2.5gb
 # Append one GB and truncate to size
 #truncate -s 2600M $IMGNAME
-qemu-img resize $IMGNAME 3000M || die "Image resize failed"
+qemu-img resize $IMGNAME 2700M || die "Image resize failed"
 lo=$(losetup -f)
 losetup $lo $IMGNAME
 partprobe $lo
@@ -88,7 +90,6 @@ else
     chroot mnt /bin/bash -c /root/stratux/image/mk_europe_edition_device_setup64.sh
 fi
 mkdir -p out
-rm out/*
 
 # Move the selfupdate file out of there..
 mv mnt/root/update-*.sh out
@@ -107,11 +108,13 @@ zip out/$outname.zip $outname
 
 
 # Now create US default config into the image and create the eu-us version..
-mount -t ext4 -o offset=$partoffset $outname mnt/ || die "root-mount failed"
-echo '{"UAT_Enabled": true,"OGN_Enabled": false,"DeveloperMode": false}' > mnt/etc/stratux.conf
-umount mnt
-mv $outname $outname_us
-zip out/$outname_us.zip $outname_us
-rm $outname_us
+if [ "$3" == "us" ]; then
+    mount -t ext4 -o offset=$partoffset $outname mnt/ || die "root-mount failed"
+    echo '{"UAT_Enabled": true,"OGN_Enabled": false,"DeveloperMode": false}' > mnt/etc/stratux.conf
+    umount mnt
+    mv $outname $outname_us
+    zip out/$outname_us.zip $outname_us
+fi
+
 
 echo "Final images has been placed into $TMPDIR/out. Please install and test the image."
