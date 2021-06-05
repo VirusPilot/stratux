@@ -93,9 +93,9 @@ cd /root && rm -rf kalibrate-rtl
 
 # Install golang
 cd /root
-wget https://golang.org/dl/go1.16.4.linux-arm64.tar.gz
-tar xzf go1.16.4.linux-arm64.tar.gz
-rm go1.16.4.linux-arm64.tar.gz
+wget https://golang.org/dl/go1.16.5.linux-arm64.tar.gz
+tar xzf go1.16.5.linux-arm64.tar.gz
+rm go1.16.5.linux-arm64.tar.gz
 
 # Compile stratux
 cd /root/stratux
