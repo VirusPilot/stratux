@@ -42,7 +42,7 @@ sizelimit=$(( 512*sizelimit ))
 # Original image partition is too small to hold our stuff.. resize it to 2.5gb
 # Append one GB and truncate to size
 #truncate -s 2600M $IMGNAME
-qemu-img resize $IMGNAME 2700M || die "Image resize failed"
+qemu-img resize $IMGNAME 3000M || die "Image resize failed"
 lo=$(losetup -f)
 losetup $lo $IMGNAME
 partprobe $lo
@@ -90,6 +90,7 @@ else
     chroot mnt /bin/bash -c /root/stratux/image/mk_europe_edition_device_setup64.sh
 fi
 mkdir -p out
+rm out/*
 
 # Move the selfupdate file out of there..
 mv mnt/root/update-*.sh out
