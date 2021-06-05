@@ -25,7 +25,7 @@ PATH=/root/fake:$PATH apt dist-upgrade --yes
 apt clean
 
 PATH=/root/fake:$PATH apt install --yes libjpeg62-turbo-dev libconfig9 rpi-update hostapd isc-dhcp-server tcpdump git cmake \
-    libusb-1.0-0-dev build-essential autoconf libtool i2c-tools libfftw3-dev libncurses-dev python-serial emu-utils parted zip unzip
+    libusb-1.0-0-dev build-essential autoconf libtool i2c-tools libfftw3-dev libncurses-dev python-serial qemu-utils parted zip unzip
 
 # try to reduce writing to SD card as much as possible, so they don't get bricked when yanking the power cable
 # Disable swap...
