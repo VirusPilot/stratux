@@ -17,6 +17,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -26,6 +27,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"text/template"
 	"time"
@@ -48,6 +50,8 @@ var weatherUpdate *uibroadcaster
 var trafficUpdate *uibroadcaster
 var radarUpdate *uibroadcaster
 var gdl90Update *uibroadcaster
+var mbtileConnectionCache = make(map[string]*sql.DB)
+var mbtileCacheLock = sync.Mutex{}
 
 func handleGDL90WS(conn *websocket.Conn) {
 	// Subscribe the socket to receive updates.
@@ -903,6 +907,30 @@ func viewLogs(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func connectMbTilesArchive(path string) (*sql.DB, error) {
+	mbtileCacheLock.Lock()
+	defer mbtileCacheLock.Unlock()
+	if conn, ok := mbtileConnectionCache[path]; ok {
+		return conn, nil
+	} else {
+		conn, err := sql.Open("sqlite3", path + "?mode=ro")
+		if err != nil {
+			return nil, err
+		}
+		mbtileConnectionCache[path] = conn
+		return conn, nil
+	}
+}
+
+func tileToDegree(z, x, y int) (lon, lat float64) {
+	// osm-like schema:
+	y = (1 << z) - y - 1
+	n := math.Pi - 2.0*math.Pi*float64(y)/math.Exp2(float64(z))
+	lat = 180.0 / math.Pi * math.Atan(0.5*(math.Exp(n)-math.Exp(-n)))
+	lon = float64(x)/math.Exp2(float64(z))*360.0 - 180.0
+	return lon, lat
+}
+
 // Scans mapdata dir for all .db and .mbtiles files and returns json representation of all metadata values
 func handleTilesets(w http.ResponseWriter, r *http.Request) {
 	files, err := ioutil.ReadDir(STRATUX_HOME + "/mapdata/");
@@ -916,12 +944,11 @@ func handleTilesets(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		if strings.HasSuffix(f.Name(), ".mbtiles") || strings.HasSuffix(f.Name(), ".db") {
-			db, err := sql.Open("sqlite3", STRATUX_HOME + "/mapdata/" + f.Name())
+			db, err := connectMbTilesArchive(STRATUX_HOME + "/mapdata/" + f.Name())
 			if err != nil {
 				log.Printf("SQLite open " + f.Name() + " failed: %s", err.Error())
 				continue
 			}
-			defer db.Close()
 			rows, err := db.Query(`SELECT name, value FROM metadata 
 				UNION SELECT 'minzoom', min(zoom_level) FROM tiles WHERE NOT EXISTS (SELECT * FROM metadata WHERE name='minzoom')
 				UNION SELECT 'maxzoom', max(zoom_level) FROM tiles WHERE NOT EXISTS (SELECT * FROM metadata WHERE name='maxzoom')`);
@@ -936,6 +963,23 @@ func handleTilesets(w http.ResponseWriter, r *http.Request) {
 				rows.Scan(&name, &val)
 				meta[name] = val
 			}
+			// determine extent of layer if not given.. Openlayers kinda needs this, or it can happen that it tries to do
+			// a billion request do down-scale high-res pngs that aren't even there (i.e. all 404s)
+			if _, ok := meta["bounds"]; !ok {
+				maxZoomInt, _ := strconv.ParseInt(meta["maxzoom"], 10, 32)
+				rows, err = db.Query("SELECT min(tile_column), min(tile_row), max(tile_column), max(tile_row) FROM tiles WHERE zoom_level=?", maxZoomInt)
+				if err != nil {
+					log.Printf("SQLite read error %s: %s", f.Name(), err.Error())
+					continue
+				}
+				rows.Next()
+				var xmin, ymin, xmax, ymax int
+				rows.Scan(&xmin, &ymin, &xmax, &ymax)
+				lonmin, latmin := tileToDegree(int(maxZoomInt), xmin, ymin)
+				lonmax, latmax := tileToDegree(int(maxZoomInt), xmax+1, ymax+1)
+				meta["bounds"] = fmt.Sprintf("%f,%f,%f,%f", lonmin, latmin, lonmax, latmax)
+			}
+
 			result[f.Name()] = meta
 		}
 	}
@@ -944,11 +988,10 @@ func handleTilesets(w http.ResponseWriter, r *http.Request) {
 }
 
 func loadTile(fname string, z, x, y int) ([]byte, error) {
-	db, err := sql.Open("sqlite3", STRATUX_HOME + "/mapdata/" + fname + "?mode=ro")
+	db, err := connectMbTilesArchive(STRATUX_HOME + "/mapdata/" + fname)
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
 	rows, err := db.Query("SELECT tile_data FROM tiles WHERE zoom_level=? AND tile_column=? AND tile_row=?", z, x, y)
 	if err != nil {
 		log.Printf("Failed to query mbtiles: %s", err.Error())
