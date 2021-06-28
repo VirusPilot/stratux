@@ -2079,6 +2079,7 @@ func gpsAttitudeSender() {
 
 					makeAHRSGDL90Report()
 					makeAHRSSimReport()
+					makeAHRSLevilReport()
 				}
 				mySituation.muGPSPerformance.Unlock()
 			}
