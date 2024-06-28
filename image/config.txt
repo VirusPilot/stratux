@@ -53,7 +53,7 @@ dtparam=act_led_trigger=none
 dtparam=act_led_activelow=off
 
 # Stratux: set UART baud rate
-# init_uart_baud=115200
+init_uart_baud=115200
 
 # Stratux: remove USB current limit on Pi2/3/4
 max_usb_current=1
