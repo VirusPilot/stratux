@@ -7,8 +7,6 @@ dtparam=i2c_arm=on
 #dtparam=i2s=on
 dtparam=spi=on
 
-# move RPi3 Bluetooth off of hardware UART to free up connection for GPS
-#dtoverlay=disable-bt
 enable_uart=1
 
 # Additional overlays and parameters are documented
@@ -39,9 +37,6 @@ disable_overscan=1
 
 # Run as fast as firmware / board allows
 arm_boost=1
-
-# Stratux: move RPi3 Bluetooth off of hardware UART to free up connection for GPS
-# dtoverlay=disable-bt
 
 # Stratux: i2c serial support
 dtoverlay=sc16is752-i2c,int_pin=4,addr=0x4d,xtal=1843900
