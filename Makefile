@@ -97,7 +97,7 @@ optinstall: www ogn/ddb.json
 
 
 install: optinstall
-	-$(STRATUX_HOME)/bin/fancontrol remove
+	#-$(STRATUX_HOME)/bin/fancontrol remove
 	#$(STRATUX_HOME)/bin/fancontrol install
 
 	# System configuration
