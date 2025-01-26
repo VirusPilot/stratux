@@ -378,10 +378,8 @@ func initGPSSerial() bool {
 		// gpsattitude too much --  without WAAS corrections, the algorithm could get jumpy at higher
 		// sampling rates.
 
-		// load default configuration             |      clearMask     |  |     saveMask       |  |     loadMask       |  deviceMask
+		// load default configuration             |      clearMask     |  |     saveMask       |  |     loadMask          |  deviceMask
 		p.Write(makeUBXCFG(0x06, 0x09, 13, []byte{0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x03}))
-		time.Sleep(1000* time.Millisecond) // pause and wait for the GPS to finish configuring itself before closing / reopening the port
-		p.Write(makeUBXCFG(0x06, 0x09, 13, []byte{0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03}))
 		time.Sleep(1000* time.Millisecond) // pause and wait for the GPS to finish configuring itself before closing / reopening the port
 
 		if globalStatus.GPS_detected_type == GPS_TYPE_UBX9 {
