@@ -103,9 +103,9 @@ install: optinstall
 	chmod 644 /lib/systemd/system/stratux.service
 	ln -fs /lib/systemd/system/stratux.service /etc/systemd/system/multi-user.target.wants/stratux.service
 
-	cp image/stratux_fancontrol.service  /lib/systemd/system/stratux_fancontrol.service
-	chmod 644 /lib/systemd/system/stratux_fancontrol.service
-	ln -fs /lib/systemd/system/stratux_fancontrol.service /etc/systemd/system/multi-user.target.wants/stratux_fancontrol.service
+	#cp image/stratux_fancontrol.service  /lib/systemd/system/stratux_fancontrol.service
+	#chmod 644 /lib/systemd/system/stratux_fancontrol.service
+	#ln -fs /lib/systemd/system/stratux_fancontrol.service /etc/systemd/system/multi-user.target.wants/stratux_fancontrol.service
 
 
 clean:
