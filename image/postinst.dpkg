@@ -1,0 +1,15 @@
+#!/bin/bash
+echo "Post install script for stratux is running.."
+systemctl daemon-reload
+systemctl enable stratux
+systemctl restart udev
+systemctl start stratux
+# Raspberry Pi's have the config.txt so this is one way to determine if its a raspberry pi
+arch=$(uname -m)
+if  [ "$arch" == "aarch64" ]; then
+    if [ -f "/boot/firmware/config.txt" ]; then
+            systemctl enable stratux_fancontrol
+            systemctl start stratux_fancontrol
+    fi
+fi
+exit 0
