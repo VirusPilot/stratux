@@ -1,64 +1,31 @@
-# For more options and information see
-# http://rptl.io/configtxt
-# Some settings may impact device functionality. See link above for details
+# RPi /boot/firmware/config.txt
 
-# Uncomment some or all of these to enable the optional hardware interfaces
+dtparam=audio=on
+max_usb_current=1
+usb_max_current_enable=1
 dtparam=i2c_arm=on
-#dtparam=i2s=on
+dtparam=i2c1=on
+dtparam=i2c1_baudrate=400000
+dtparam=i2c_arm_baudrate=400000
 dtparam=spi=on
 
+# move RPi3 Bluetooth off of hardware UART to free up connection for GPS
+#dtoverlay=disable-bt
 enable_uart=1
 
-# Additional overlays and parameters are documented
-# /boot/firmware/overlays/README
-
-# Automatically load overlays for detected cameras
-camera_auto_detect=1
-
-# Automatically load overlays for detected DSI displays
-display_auto_detect=1
-
-# Automatically load initramfs files, if found
-auto_initramfs=1
-
-# Enable DRM VC4 V3D driver
-dtoverlay=vc4-kms-v3d
-max_framebuffers=2
-
-# Don't have the firmware create an initial video= setting in cmdline.txt.
-# Use the kernel's default instead.
-disable_fw_kms_setup=1
-
-# Run in 64-bit mode
-arm_64bit=1
-
-# Disable compensation for displays with overscan
-disable_overscan=1
-
-# Run as fast as firmware / board allows
-arm_boost=1
-
-# Stratux: i2c serial support
+# i2c serial support
 dtoverlay=sc16is752-i2c,int_pin=4,addr=0x4d,xtal=1843900
 
 # Otherwise TTGO T-Motion will cause kernel panic on bookworm
 dtoverlay=dwc2,dr_mode=host
 
-# Stratux: disable default (mmc0) behavior on the ACT LED.
+# disable default (mmc0) behavior on the ACT LED.
 dtparam=act_led_trigger=none
 dtparam=act_led_activelow=off
 
-# Stratux: set UART baud rate
-init_uart_baud=38400
+# The below has been added as a proposed EMI reduction measure. Issue #573.
+sdram_freq=450
+core_freq=450
+arm_freq=900
 
-# Stratux: remove USB current limit on Pi2/3/4
-max_usb_current=1
-
-# Stratux: remove USB current limit on Pi5
-usb_max_current_enable=1
-
-# Stratux: disable the rainbow splash screen on boot
-disable_splash=1
-
-# Stratux: control of a PoE HAT fan through I2C
-disable_poe_fan=1
+arm_64bit=1
