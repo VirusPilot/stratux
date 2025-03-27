@@ -1328,7 +1328,7 @@ func defaultSettings() {
 	globalSettings.ES_Enabled = true
 	globalSettings.OGN_Enabled = false
 	globalSettings.Dump1090Gain = 37.2
-	globalSettings.APRS_Enabled = false
+	globalSettings.APRS_Enabled = true
 	globalSettings.GPS_Enabled = true
 	globalSettings.IMU_Sensor_Enabled = true
 	globalSettings.BMP_Sensor_Enabled = true
@@ -1374,7 +1374,7 @@ func defaultSettings() {
 
 	globalSettings.PWMDutyMin = 0
 
-	globalSettings.OGNI2CTXEnabled = false
+	globalSettings.OGNI2CTXEnabled = true
 
 	globalSettings.ClearLogOnStart = false
 
