@@ -16,12 +16,9 @@ cp config pi-gen/
 # copy the stage2 10-stratux files into place
 rsync -av --delete stage2/10-stratux/ pi-gen/stage2/10-stratux/
 
-# clone the local git repository (and present branch) into pi-gen
-# so the files are visible to docker
-#
-# NOTE: This means local file changes will NOT be reflected in the image build
-local_git=`pwd`/../
-(cd pi-gen && rm -rf stratux && git clone ${local_git} stratux)
+# clone the Stratux repository into pi-gen so the files are visible to docker
+stratux_repo=https://github.com/VirusPilot/stratux
+(cd pi-gen && rm -rf stratux && git clone ${stratux_repo} stratux)
 (cd pi-gen/stratux && git submodule update --init --recursive)
 # Build the stratux debian package.
 (cd pi-gen/stratux && make ddpkg)
@@ -35,4 +32,5 @@ fi
 #
 # pass PRESERVE_CONTAINER=1 to keep the container in the case of error
 # to enable debugging
-(cd pi-gen && ./build-docker.sh)
+(cd pi-gen && CONTINUE=1 ./build-docker.sh)
+mv -f pi-gen/stratux/stratux-1.6r1-eu028-arm64.deb ./stratux-1.6r1-eu028-arm64.deb
