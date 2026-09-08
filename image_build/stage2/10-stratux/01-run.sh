@@ -45,13 +45,15 @@ on_chroot << EOF
     pip install --break-system-packages esptool
 EOF
 
-# install bluez 5.79 version shipping with current RPiOS (5.66) is buggy in peripheral mode..
-BLUEZ_DEB="bluez_5.79-1_arm64.deb"
+# Clone, build, and install BlueZ 5.87
+# BlueZ 5.79 had limitations, 5.87 provides better BLE support
 on_chroot << EOF
     cd /tmp
-    wget https://github.com/stratux/bluez/releases/download/v1.0/${BLUEZ_DEB}
-    dpkg -i ${BLUEZ_DEB}
-    rm ${BLUEZ_DEB}
+    apt install -y git build-essential libdbus-1-dev libglib2.0-dev libudev-dev libical-dev libreadline-dev python3-docutils libsystemd-dev
+    git clone --depth 1 --branch 5.87 https://github.com/bluez/bluez.git bluez-src
+    cd bluez-src && ./bootstrap && ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-library
+    make -j$(nproc) && make install
+    rm -rf /tmp/bluez-src
 EOF
 
 LIBRTLSDR_DEB="librtlsdr0_2.0.2-2_arm64.deb"
