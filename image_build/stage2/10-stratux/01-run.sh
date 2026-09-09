@@ -45,15 +45,28 @@ on_chroot << EOF
     pip install --break-system-packages esptool
 EOF
 
-# Clone, build, and install BlueZ 5.87
+# install bluez 5.87 to fix BLE advertising issues
 # BlueZ 5.79 had limitations, 5.87 provides better BLE support
+BLUEZ_VERSION="5.87"
 on_chroot << EOF
     cd /tmp
-    apt install -y git build-essential libdbus-1-dev libglib2.0-dev libudev-dev libical-dev libreadline-dev python3-docutils libsystemd-dev
-    git clone --depth 1 --branch 5.87 https://github.com/bluez/bluez.git bluez-src
-    cd bluez-src && ./bootstrap && ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-library
-    make -j$(nproc) && make install
-    rm -rf /tmp/bluez-src
+    
+    # Install build dependencies
+    apt install -y build-essential libdbus-1-dev libglib2.0-dev libudev-dev libical-dev libreadline-dev
+    
+    # Clone, build, and install BlueZ 5.87
+    git clone --depth 1 --branch ${BLUEZ_VERSION} https://github.com/bluez/bluez.git bluez-src
+    cd bluez-src
+    ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-library
+    make -j$(nproc)
+    make install
+    
+    # Cleanup
+    cd ..
+    rm -rf bluez-src
+    
+    # Remove build dependencies to save space
+    apt autoremove -y build-essential
 EOF
 
 LIBRTLSDR_DEB="librtlsdr0_2.0.2-2_arm64.deb"
