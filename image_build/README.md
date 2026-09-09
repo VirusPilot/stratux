@@ -1,11 +1,21 @@
 # To build
 
+create a running Debian 12 Bookworm RaspiOS
+
 Run:
 ```
+   ssh root@<your-pi>.local
+   git clone --recursive https://github.com/VirusPilot/stratux
+   cd stratux/image_build
    curl -fsSL https://get.docker.com -o get-docker.sh
    bash get-docker.sh
    ./build.sh
 ```
+On your local machine:
+`scp root@<your-pi>.local:/root/stratux/image_build/pi-gen/deploy/image_2026-09-08-stratux-lite.zip`
+
+Prior to another fresh Run:
+`docker rm -v pigen_work`
 
 # Background
 
