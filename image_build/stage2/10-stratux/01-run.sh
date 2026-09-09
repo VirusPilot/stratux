@@ -45,70 +45,40 @@ on_chroot << EOF
     pip install --break-system-packages esptool
 EOF
 
-# install bluez 5.87 to fix BLE advertising issues
-# BlueZ 5.79 had limitations, 5.87 provides better BLE support
-BLUEZ_VERSION="5.87"
 on_chroot << EOF
+    # install dependencies
+    apt install -y build-essential libdbus-1-dev libglib2.0-dev libudev-dev libical-dev libreadline-dev git autoconf  \
+    libtool libfftw3-dev libusb-1.0-0 libusb-1.0-0-dev python3-docutils libsystemd-dev \
+    cmake debhelper
+
+    # BlueZ 5.87
     cd /tmp
-    
-    # Install build dependencies
-    apt install -y build-essential libdbus-1-dev libglib2.0-dev libudev-dev libical-dev libreadline-dev
-    
-    # Clone, build, and install BlueZ 5.87
-    git clone --depth 1 --branch ${BLUEZ_VERSION} https://github.com/bluez/bluez.git bluez-src
+    git clone --depth 1 --branch 5.87 https://github.com/bluez/bluez.git bluez-src
     cd bluez-src
-    ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-library
-    make -j$(nproc)
-    make install
-    
-    # Cleanup
-    cd ..
+    ./bootstrap && ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-library
+    make && make install
+    cd ../
     rm -rf bluez-src
-    
-    # Remove build dependencies to save space
-    apt autoremove -y build-essential
-EOF
 
-LIBRTLSDR_DEB="librtlsdr0_2.0.2-2_arm64.deb"
-LIBRTLSDR_DEV_DEB="librtlsdr-dev_2.0.2-2_arm64.deb"
-RTLSDR_DEB="rtl-sdr_2.0.2-2_arm64.deb"
-on_chroot << EOF
-    echo "Installing librtlsdr in chroot"
+    # rtl_sdr
     cd /tmp
-    apt install -y libusb-1.0-0 libusb-1.0-0-dev
-    wget https://github.com/stratux/rtlsdr/releases/download/v1.0/${LIBRTLSDR_DEB}
-    wget https://github.com/stratux/rtlsdr/releases/download/v1.0/${LIBRTLSDR_DEV_DEB}
-    dpkg -i ${LIBRTLSDR_DEB}
-    dpkg -i ${LIBRTLSDR_DEV_DEB}
-    rm ${LIBRTLSDR_DEB}
-    rm ${LIBRTLSDR_DEV_DEB}
-
-    echo "Installing rtlsdr"
-    cd /tmp
-    wget https://github.com/stratux/rtlsdr/releases/download/v1.0/${RTLSDR_DEB}
-    dpkg -i ${RTLSDR_DEB}
-    rm ${RTLSDR_DEB}
-
-    echo "Building and installing kalibrate-rtl"
-
-    apt install --yes build-essential autoconf libtool libfftw3-dev git
+    git clone https://github.com/osmocom/rtl-sdr
+    cd rtl-sdr
+    dpkg-buildpackage -b --no-sign
+    cd ../
+    dpkg -i librtlsdr0_*.deb
+    dpkg -i librtlsdr-dev_*.deb
+    dpkg -i rtl-sdr_*.deb
+    rm -rf rtl-sdr
 
     # kalibrate-rtl
     cd /tmp
     git clone https://github.com/steve-m/kalibrate-rtl
     cd kalibrate-rtl
-    ./bootstrap
-    ./configure
-    make -j8
-    make install
+    ./bootstrap && ./configure
+    make && make install
     cd ../
     rm -rf kalibrate-rtl
-
-    # remove the dev package of rtlsdr
-    dpkg -r librtlsdr-dev
-
-    # remove now unused libusb-1.0-0-dev
-    apt remove -y libusb-1.0-0-dev
 EOF
 
 # Prepare wiringpi for ogn trx via GPIO
