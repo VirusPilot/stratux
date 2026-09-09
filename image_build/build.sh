@@ -32,5 +32,4 @@ fi
 #
 # pass PRESERVE_CONTAINER=1 to keep the container in the case of error
 # to enable debugging
-(cd pi-gen && CONTINUE=1 ./build-docker.sh)
-mv -f pi-gen/stratux/stratux-1.6r1-eu028-arm64.deb ./stratux-1.6r1-eu028-arm64.deb
+(cd pi-gen && ./build-docker.sh)
