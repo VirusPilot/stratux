@@ -8,6 +8,14 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: Tag to release
+        required: true
+        type: string
+
+permissions:
+  contents: write
 
 jobs:
   build_image:
@@ -31,6 +39,7 @@ jobs:
         with:
           files: image_build/pi-gen/deploy/*
           draft: true
+          tag_name: ${{ inputs.tag_name || github.ref_name }}
 
       - name: Debian Package
         uses: softprops/action-gh-release@v2
@@ -38,3 +47,4 @@ jobs:
           files: |
             image_build/pi-gen/stratux/*.deb
           draft: true
+          tag_name: ${{ inputs.tag_name || github.ref_name }}
