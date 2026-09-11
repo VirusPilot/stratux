@@ -1,3 +1,6 @@
+# Stratux images based on latest sources of this fork can be found here:
+- https://github.com/VirusPilot/stratux/actions, just select the latest workflow run and download the file under **Artifacts**
+
 # differences to upstream Stratux
 - use latest dump1090 v11.1 from FlightAware
 - enable image creation via GitHub actions
