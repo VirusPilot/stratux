@@ -29,8 +29,6 @@ if [ $ERRCODE -ne 0 ]; then
 fi
 
 # build via docker
-# Force ARM64 Debian Bookworm base image for stratux
-export PIGEN_DOCKER_OPTS="--build-arg BASE_IMAGE=arm64v8/debian:bookworm"
 #
 # pass PRESERVE_CONTAINER=1 to keep the container in the case of error
 # to enable debugging
