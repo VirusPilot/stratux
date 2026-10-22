@@ -1328,7 +1328,7 @@ func defaultSettings() {
 	globalSettings.ES_Enabled = true
 	globalSettings.OGN_Enabled = false
 	globalSettings.Dump1090Gain = 37.2
-	globalSettings.APRS_Enabled = true
+	globalSettings.APRS_Enabled = false
 	globalSettings.GPS_Enabled = true
 	globalSettings.IMU_Sensor_Enabled = true
 	globalSettings.BMP_Sensor_Enabled = true
@@ -1354,6 +1354,7 @@ func defaultSettings() {
 	globalSettings.DisplayTrafficSource = false
 	globalSettings.ReplayLog = false //TODO: 'true' for debug builds.
 	globalSettings.AHRSLog = false
+	globalSettings.PersistentLogging = true
 	globalSettings.IMUMapping = [2]int{-1, 0}
 	globalSettings.OwnshipModeS = "F00000"
 	globalSettings.DeveloperMode = false
@@ -1374,7 +1375,7 @@ func defaultSettings() {
 
 	globalSettings.PWMDutyMin = 0
 
-	globalSettings.OGNI2CTXEnabled = true
+	globalSettings.OGNI2CTXEnabled = false
 
 	globalSettings.ClearLogOnStart = false
 
@@ -1883,4 +1884,3 @@ func main() {
 		select {}
 	}
 }
-
