@@ -7,10 +7,6 @@
 - build bluez v5.79 from source
 - build rtl-sdr from latest osmocom sources
 - GPS LED enabled
-- load u-blox defaults on startup
-- Internet (OGN APRS) disabled
-- OGN Transmission via I²C/GPIO HAT disabled
-- Persistent logging enabled
 
 [![CI](https://github.com/stratux/stratux/actions/workflows/ci.yml/badge.svg)](https://github.com/stratux/stratux/actions/workflows/ci.yml)
 [![](https://dcbadge.limes.pink/api/server/D9NQ6xe4nF)](https://discord.gg/D9NQ6xe4nF)
