@@ -4,7 +4,7 @@
 # differences to upstream Stratux
 - use latest dump1090 v11.1 from FlightAware
 - enable image creation via GitHub actions
-- build bluez v5.79 from source
+- build bluez from source
 - build rtl-sdr from latest osmocom sources
 - GPS LED enabled
 
