@@ -51,9 +51,9 @@ on_chroot << EOF
     libtool libfftw3-dev libusb-1.0-0 libusb-1.0-0-dev python3-docutils libsystemd-dev \
     cmake debhelper
 
-    # BlueZ 5.79
+    # BlueZ 5.82
     cd /tmp
-    git clone --depth 1 --branch 5.79 https://github.com/bluez/bluez.git bluez-src
+    git clone --depth 1 --branch 5.82 https://github.com/bluez/bluez.git bluez-src
     cd bluez-src
     ./bootstrap && ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-library
     make && make install
