@@ -2,6 +2,11 @@ name: Release
 
 # Controls when the workflow will run
 on:
+  # and pushes to master
+  push:
+    branches:
+      - master
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 

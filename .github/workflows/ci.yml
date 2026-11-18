@@ -1,5 +1,6 @@
 name: CI
 
+# Controls when the workflow will run
 on:
   # and pushes to master
   push:
