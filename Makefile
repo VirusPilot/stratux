@@ -137,6 +137,8 @@ dpkg: all prep_dpkg wwwdpkg ogn/ddb.json optinstall_dpkg
 	chmod 644 $(DEBPKG_BASE)/lib/systemd/system/stratux.service
 	cp debian/stratux_fancontrol.service $(DEBPKG_BASE)/lib/systemd/system
 	chmod 644 $(DEBPKG_BASE)/lib/systemd/system/stratux_fancontrol.service
+	# Avoid iPhone pairing failures when BlueZ reads the phone's battery level.
+	install -D -m 644 debian/90-stratux-no-battery.conf $(DEBPKG_BASE)/lib/systemd/system/bluetooth.service.d/90-stratux-no-battery.conf
 	#ln -s $(DEBPKG_BASE)/lib/systemd/system/stratux.service $(DEBPKG_BASE)/etc/systemd/system/multi-user.target.wants/stratux.service
 	# Set up the versioning inside of the dpkg system. This puts the version number inside of the config file
 	sed -i 's/VERSION/$(VERSIONSTR)/g' $(DEBPKG_BASE)/DEBIAN/control
