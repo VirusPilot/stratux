@@ -4,9 +4,10 @@
 # differences to upstream Stratux
 - use latest dump1090 v11.1 from FlightAware
 - enable image creation via GitHub actions
-- build bluez from source
+- build bluez v5.88 from source
+- fix iOS BLE disconnects
 - build rtl-sdr from latest osmocom sources
-- GPS LED enabled
+- enable GPS LED
 
 [![CI](https://github.com/stratux/stratux/actions/workflows/ci.yml/badge.svg)](https://github.com/stratux/stratux/actions/workflows/ci.yml)
 [![](https://dcbadge.limes.pink/api/server/D9NQ6xe4nF)](https://discord.gg/D9NQ6xe4nF)
