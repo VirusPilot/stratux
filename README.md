@@ -6,6 +6,7 @@
 - enable image creation via GitHub actions
 - build bluez v5.88 from source
 - fix iOS BLE disconnects
+- added `AHRS Sentences over FLARM NMEA` switch
 - build rtl-sdr from latest osmocom sources
 - enable GPS LED
 
