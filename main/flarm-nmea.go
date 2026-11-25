@@ -429,7 +429,7 @@ func makePGRMZString() string {
 }
 
 func makeAHRSLevilReport() {
-	if !globalStatus.IMUConnected || !isAHRSValid() {
+	if !globalSettings.RPYL_Enabled || !globalStatus.IMUConnected || !isAHRSValid() {
 		return
 	}
 	// Values if invalid

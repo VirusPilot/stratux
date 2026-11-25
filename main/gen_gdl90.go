@@ -1196,6 +1196,7 @@ type settings struct {
 	GPS_Enabled          bool
 	BMP_Sensor_Enabled   bool
 	IMU_Sensor_Enabled   bool
+	RPYL_Enabled         bool
 	NetworkOutputs       []networkConnection
 	SerialOutputs        map[string]serialConnection
 	BleOutputs           []bleConnection
@@ -1334,6 +1335,7 @@ func defaultSettings() {
 	globalSettings.APRS_Enabled = true
 	globalSettings.GPS_Enabled = true
 	globalSettings.IMU_Sensor_Enabled = true
+	globalSettings.RPYL_Enabled = true
 	globalSettings.BMP_Sensor_Enabled = true
 	//FIXME: Need to change format below.
 	globalSettings.NetworkOutputs = []networkConnection{

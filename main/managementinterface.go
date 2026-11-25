@@ -436,6 +436,8 @@ func handleSettingsSetRequest(w http.ResponseWriter, r *http.Request) {
 							myIMUReader.Close()
 							globalStatus.IMUConnected = false
 						}
+					case "RPYL_Enabled":
+						globalSettings.RPYL_Enabled = val.(bool)
 					case "BMP_Sensor_Enabled":
 						globalSettings.BMP_Sensor_Enabled = val.(bool)
 						if !globalSettings.BMP_Sensor_Enabled && globalStatus.BMPConnected {
